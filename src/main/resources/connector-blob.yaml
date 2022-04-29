@@ -1,0 +1,179 @@
+# blob config
+# endpoint: https://solutionblobstorage.blob.core.windows.net/blobstorage
+# from endpoint got storageAccountName、containerName
+storageAccountName: solutionblobstorage
+containerName: blobstorage
+sastoken: sp=racwdl&st=2021-07-07T01:48:54Z&se=2021-07-30T09:48:54Z&sip=0.0.0.0-255.255.255.255&sv=2020-08-04&sr=c&sig=kMG%2BEDzp0Wm%2BNWCcF7KFq63OLZa4lVaag3B6GxvSElM%3D
+
+# Blob file  -> file to import
+parentDirectory: /sf1
+blobFiles: [ Comment.csv,Comment_hasTag_Tag.csv,Forum.csv,Forum_hasMember_Person.csv,Forum_hasTag_Tag.csv,Organisation.csv,Person.csv,Person_hasInterest_Tag.csv,Person_knows_Person.csv,Person_likes_Comment.csv,Person_likes_Post.csv,Person_studyAt_University.csv,Person_workAt_Company.csv,Place.csv,Post.csv,Post_hasTag_Tag.csv,Tag.csv,TagClass.csv ]
+#blobFiles: [ Person_hasInterest_Tag.csv ]
+
+# tigergraph config
+driver: com.tigergraph.jdbc.Driver
+url: jdbc:tg:http://192.168.100.21:14240
+username: tigergraph
+password: tigergraph
+token: k670rl16oncs359la8tf2upb5jlmrfg0
+# graph name
+graph: ldbc_snb
+
+
+batchsize: 5000
+# This symbol is used to represent a delimiter during transmission. No symbol can exist in the data
+sep: '|'
+# This symbol is used to represent a newline during transmission. No symbol can exist in the data
+eol: "\n"
+debug: 0
+# Maximum number of partitions for Spark
+numPartitions: 150
+
+
+# The total file CSV information can be set separately in the file mapping relationship if one file doesn't match the other files and that will prevail
+header: "true"
+delimiter: "|"
+
+
+# Data structure mapping
+# key : blob file name
+# value : tg loading job mapping
+#     dbtable : loading job name
+#     sourceConfig: source file config
+#         "header": "true"  是否有表头
+#         "delimiter": "|"  分隔符
+#         "old_column": ""  列名,如果提供了列名，会将列名替换 以,分割
+#     jobConfig: config loading job
+#         column : columns need selected in blob
+#         filename: filename defined in the loading job
+mappingRules:
+  Comment.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      # header 默认是true，代表有表头
+      # 如果是false，则代表没有表头，如果没有表头，可设置old_column 列数必须与csv保持一致。设置后column方有效 否则无效
+      "header": "true"
+      "delimiter": "|"
+      "old_column": "creationdate,id,locationip,browserused,content,length,creator,place,replyofpost,replyofcomment"
+    "jobConfig":
+      "column": "creationdate,id,locationip,browserused,content,length,creator,place,replyofpost,replyofcomment"
+      "filename": file_Comment
+  Comment_small.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "jobConfig":
+      "column": "creationdate,id,locationip,browserused,content,length,creator,place,replyofpost,replyofcomment"
+      "filename": file_Comment
+  Comment_hasTag_Tag.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      header: "true"
+      "delimiter": "|"
+      "old_column": "creationdate,commentId,tagId"
+    "jobConfig":
+      "column": "creationdate,commentId,tagId"
+      "filename": file_Comment_hasTag_Tag
+  Forum.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "date,id,title,moderator"
+    "jobConfig":
+      "column": "date,id,title,moderator"
+      "filename": file_Forum
+  Forum_hasMember_Person.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,forumId,personId"
+    "jobConfig":
+      "column": "creationdate,forumId,personId"
+      "filename": file_Forum_hasMember_Person
+  Forum_hasTag_Tag.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,forumId,tagId"
+    "jobConfig":
+      "column": "creationdate,forumId,tagId"
+      "filename": file_Forum_hasTag_Tag
+  Organisation.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "jobConfig":
+      "column": "id,type,name,url,place"
+      "filename": file_Organisation
+  Person.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "jobConfig":
+      "column": "creationdate,id,firstname,lastname,gender,birthday,locationip,browserused,place,language,email"
+      "filename": file_Person
+  Person_hasInterest_Tag.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,personId,tagId"
+    "jobConfig":
+      "column": "creationdate,personId,tagId"
+      "filename": file_Person_hasInterest_Tag
+  Person_knows_Person.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,person1Id,person2Id"
+    "jobConfig":
+      "column": "creationdate,person1Id,person2Id"
+      "filename": file_Person_knows_Person
+  Person_likes_Comment.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,person1Id,commentId"
+    "jobConfig":
+      "column": "creationdate,person1Id,commentId"
+      "filename": file_Person_likes_Comment
+  Person_likes_Post.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,personId,postId"
+    "jobConfig":
+      "column": "creationdate,personId,postId"
+      "filename": file_Person_likes_Post
+  Person_studyAt_University.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,personId,organisationId,classyear"
+    "jobConfig":
+      "column": "creationdate,personId,organisationId,classyear"
+      "filename": file_Person_studyAt_University
+  Person_workAt_Company.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,personId,organisationId,workfrom"
+    "jobConfig":
+      "column": "creationdate,personId,organisationId,workfrom"
+      "filename": file_Person_workAt_Company
+  Place.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "jobConfig":
+      "column": "id,name,url,type,ispartof"
+      "filename": file_Place
+  Post.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,id,imagefile,locationip,browserused,language,content,length,creator,forumId,place"
+    "jobConfig":
+      "column": "creationdate,id,imagefile,locationip,browserused,language,content,length,creator,forumId,place"
+      "filename": file_Post
+  Post_hasTag_Tag.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      "old_column": "creationdate,postId,tagId"
+    "jobConfig":
+      "column": "creationdate,postId,tagId"
+      "filename": file_Post_hasTag_Tag
+  Tag.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "sourceConfig":
+      header: "true"
+      "delimiter": "|"
+    "jobConfig":
+      "column": "id,name,url,hastype"
+      "filename": file_Tag
+  TagClass.csv:
+    "dbtable": "job load_ldbc_snb_composite_merged_fk"
+    "jobConfig":
+      "column": "id,name,url,issubclassof"
+      "filename": file_TagClass
