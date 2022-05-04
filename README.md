@@ -16,7 +16,7 @@ This project enables users to load data from Snowflake database into TigerGraph 
 
 [friendNet](./tests/README.md)
 
-Detailed documentation location：[TigerGraphConnector_readme](./assets/TigerGraphConnector_readme.md)
+Detailed documentation location：[Blob_TigerGraphConnector_readme](./assets/Blob_TigerGraphConnector_readme.md)
 
 
 
